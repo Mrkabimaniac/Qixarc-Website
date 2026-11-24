@@ -1,4 +1,5 @@
 """Apply repeatable SEO metadata to the static deployment output."""
+from office import OFFICE, postal_address
 from pathlib import Path
 from html import escape
 import json
@@ -59,7 +60,7 @@ def apply(root):
                 block += f'<meta property="og:url" content="{url}">\n'
             for name, value in [('card', 'summary'), ('title', title), ('description', description), ('image', BASE + '/assets/qixarc-logo.webp'), ('image:alt', 'QIXARC logo')]:
                 block += f'<meta name="twitter:{name}" content="{escape(value, quote=True)}">\n'
-            organization = {'@type': 'Organization', '@id': BASE + '/#organization', 'name': 'QIXARC', 'url': BASE + '/', 'logo': BASE + '/assets/qixarc-logo.webp', 'email': 'help@qixarc.com', 'telephone': '+91-83007-15081', 'address': {'@type': 'PostalAddress', 'addressLocality': 'Madurai', 'addressRegion': 'Tamil Nadu', 'addressCountry': 'IN'}, 'sameAs': ['https://www.linkedin.com/in/qixarc-%E2%80%8E-27751b3ba', 'https://www.instagram.com/qixarc', 'https://x.com/QIXARC']}
+            organization = {'@type': 'Organization', '@id': BASE + '/#organization', 'name': 'QIXARC', 'url': BASE + '/', 'logo': BASE + '/assets/qixarc-logo.webp', 'email': 'help@qixarc.com', 'telephone': '+91-83007-15081', 'address': postal_address(), 'sameAs': ['https://www.linkedin.com/in/qixarc-%E2%80%8E-27751b3ba', 'https://www.instagram.com/qixarc', 'https://x.com/QIXARC']}
             graph = [organization, {'@type': 'WebSite', '@id': BASE + '/#website', 'url': BASE + '/', 'name': 'QIXARC', 'publisher': {'@id': BASE + '/#organization'}}]
             if route in pages:
                 page_type = {'about': 'AboutPage', 'contact': 'ContactPage', 'blog': 'CollectionPage', 'research': 'CollectionPage', 'products': 'CollectionPage'}.get(route, 'WebPage')
@@ -118,6 +119,12 @@ def apply(root):
             if 'rel="preload" href="/assets/qixarc-logo-opt.webp"' not in html:
                 html = html.replace('</head>', '<link rel="preload" href="/assets/qixarc-logo-opt.webp" as="image">\n</head>')
             html = html.replace('src="/assets/web-opt.webp" alt="" fetchpriority="high"', 'src="/assets/web-opt.webp" alt="" width="171" height="256" fetchpriority="high" decoding="async"')
+        if route != 'admin':
+            html = re.sub(r'<link rel="stylesheet" href="/launch-team.css[^"]*">\s*|<script src="/(?:company-settings|launch-team).js[^"]*" defer></script>\s*', '', html)
+        if route in ('', 'about', 'contact', 'products'):
+            html = html.replace('</head>', '<link rel="stylesheet" href="/launch-team.css?v=1">\n</head>')
+        if route in ('', 'about', 'products'):
+            html = html.replace('</head>', '<script src="/company-settings.js?v=1" defer></script>\n<script src="/launch-team.js?v=1" defer></script>\n</head>')
         path.write_text(html, encoding='utf-8')
     entries = []
     for route in pages:
@@ -127,7 +134,7 @@ def apply(root):
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(entries) + '</urlset>\n'
     (root / 'sitemap.xml').write_text(sitemap, encoding='utf-8')
     (root / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n', encoding='utf-8')
-    (root / 'llms.txt').write_text('# QIXARC\n\n> Web design, development and digital products. Based in Madurai, India; international project enquiries welcome.\n\n## Official pages\n' + ''.join(f'- [{title.split(" | ")[0]}]({BASE}{"/"+route+"/" if route else "/"}): {description}\n' for route, (title, description) in pages.items()) + '\n## Contact\n- Email: help@qixarc.com\n- Phone: +91 83007 15081\n\n## Product status\nScaler Profile: development / early access. Zevaris AI: coming soon. Serlow: alpha / in development, https://serlow-alpha.vercel.app/. Decision Sphere: coming soon; an agentic mobile AI in development, with voice or text commands and user-controlled access to mobile data and apps.\n\nThis is an optional navigation summary. The linked HTML pages are the authoritative source.\n', encoding='utf-8')
+    (root / 'llms.txt').write_text('# QIXARC\n\n> Web design, development and digital products. Based in Madurai, India; international project enquiries welcome.\n\n## Official pages\n' + ''.join(f'- [{title.split(" | ")[0]}]({BASE}{"/"+route+"/" if route else "/"}): {description}\n' for route, (title, description) in pages.items()) + '\n## Contact\n- Email: help@qixarc.com\n- Phone: +91 83007 15081\n- Registered office: ' + OFFICE + '\n\n## Product status\nScaler Profile: see https://www.scalerprofile.com/ and the Products page for access dates. Zevaris AI: coming soon. Serlow: Android beta v1.0.10, https://serlow-app.vercel.app/. Play Store launch pending. Decision Sphere: coming soon; an agentic mobile AI in development, with voice or text commands and user-controlled access to mobile data and apps.\n\nThis is an optional navigation summary. The linked HTML pages are the authoritative source.\n', encoding='utf-8')
 
 if __name__ == '__main__':
     apply(Path(__file__).resolve().parents[1] / 'dist')

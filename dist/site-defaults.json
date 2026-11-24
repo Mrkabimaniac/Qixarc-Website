@@ -1,0 +1,11 @@
+{
+  "launch": {
+    "early": "2026-12-02T00:00:00+05:30",
+    "full": "2026-12-10T00:00:00+05:30"
+  },
+  "team": [
+    {"id":"kabibalan","name":"Kabibalan","role":"Founder","portfolio":"https://kabibalan.vercel.app/","photo":"/assets/kabibalan-portrait.webp"},
+    {"id":"sri","name":"Sri","role":"Co-founder","portfolio":"https://srisaanth.vercel.app/","photo":""},
+    {"id":"giri","name":"Giri","role":"Managing Director","portfolio":"https://girimanigandan-vert.vercel.app/","photo":"/assets/kabibalan-portrait.webp"}
+  ]
+}

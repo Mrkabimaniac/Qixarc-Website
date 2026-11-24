@@ -91,6 +91,19 @@ Supabase Security Advisor reports no table/RLS findings. It reports leaked-passw
 protection disabled. See https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
 for the project-level setting and plan availability.
 
+### Website settings
+
+Apply `supabase/migrations/20261125000000_website_settings.sql` to the existing
+QIXARC Website Supabase project before using the Website settings tab. It relies
+on the existing `public.qixarc_admins` membership table. The migration creates
+public settings for the launch schedule and roster, allows admin-only writes,
+and permits admin uploads to a public WebP portrait bucket.
+
+The homepage, Products and About use published settings when available and
+fall back to the defaults in `dist/site-defaults.json`. Launch times are edited
+in IST. Use Account & security in the admin dashboard to change the current
+account's password.
+
 ## Hosting
 
 SEO uses `https://www.qixarc.com` as the production origin. `scripts/seo.py`

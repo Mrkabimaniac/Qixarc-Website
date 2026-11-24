@@ -1,18 +1,25 @@
 """QIXARC product and story content; product updates supplied by the company."""
+from html import escape
+import json
+from pathlib import Path
+
+defaults = json.loads((Path(__file__).resolve().parents[1] / 'dist/site-defaults.json').read_text(encoding='utf-8'))
+SCALER_SITE = 'https://www.scalerprofile.com/'
+SERLOW_BETA = 'https://serlow-app.vercel.app/'
 
 products = [
-    ('scaler-profile', 'Scaler Profile', 'In development / early access', 'Messaging automation',
-     'A focused platform for businesses and creators to manage WhatsApp and Instagram conversations, capture leads and automate follow-ups.',
+    ('scaler-profile', 'Scaler Profile', 'Early access scheduled', 'Messaging automation',
+     'A focused platform for businesses and creators to manage WhatsApp, Instagram and email conversations, capture leads and automate follow-ups.',
      ['Channel replies and routing', 'Lead tracking and customer engagement', 'Workflow automation with human handoff'],
-     'Core messaging flows are defined; the automation engine and channel integrations are being built.', 'scaler.html'),
+     'See the rollout schedule below and visit the website for access.', 'scaler.html'),
     ('zevaris-ai', 'Zevaris AI', 'Coming soon', 'AI assistance & automation',
      'An AI platform in development for businesses and individuals, bringing everyday automation, timely insights and intelligent assistance into one place.',
      ['AI assistance for practical tasks', 'Automation for routine work', 'Real-time analytics and recommendations'],
      'The brand and coming-soon presence are live. Work is underway on the AI, automation and analytics foundations.', 'zevaris.html'),
-    ('serlow', 'Serlow', 'Alpha / in development', 'Collaborative workspace',
-     'A connected workspace designed to bring AI-assisted notes, visual documentation, tasks and code activity together for distributed teams.',
-     ['Smart notes and visual documents', 'Project management with GitHub integration', 'An interactive virtual-office concept'],
-     'Explore the Serlow alpha while the workspace continues to develop. Features and availability may change during this early stage.', 'serlow.html'),
+    ('serlow', 'Serlow', 'Play Store launch pending', 'Collaborative workspace',
+     'A notes and visual workspace for capturing ideas, drawing on a canvas, recording meetings and collaborating in a pixel-art workplace.',
+     ['Notes and canvas', 'Meeting recordings', 'A shared pixel-art workspace'],
+     'Android beta v1.0.10 is available from the Serlow preview site. The Google Play Store launch is pending.', 'serlow.html'),
     ('decision-sphere', 'Decision Sphere', 'Coming Soon', 'Agentic AI for mobile',
      'An agentic AI for mobile devices, being built to help you control your phone through voice commands or text input.',
      ['Execute phone tasks from spoken or typed instructions', 'Summarize messages and streamline everyday workflows', 'Explore options and get support with everyday decisions'],
@@ -31,14 +38,25 @@ def product_page(hero, cta):
     for index, (slug, title, status, category, description, features, progress, source) in enumerate(products, 1):
         privacy = '<p class="product-privacy"><strong>Your phone. Your permissions.</strong> Decision Sphere is being designed around transparent, permission-based access. You choose exactly which mobile data and applications it can access.</p>' if slug == 'decision-sphere' else ''
         action = '<a class="text-link" href="/contact/">Ask about this product ↗</a>'
+        extra = ''
+        status_data = ''
         if slug == 'scaler-profile':
-            action = '<a class="button dark" href="https://scalerprofile.vercel.app/" target="_blank" rel="noopener noreferrer">Explore early access ↗</a>'
+            action = f'<a class="button dark" href="{SCALER_SITE}" target="_blank" rel="noopener noreferrer">View website ↗</a>'
+            status_data = ' data-scaler-status'
+            early = defaults['launch']['early']
+            full = defaults['launch']['full']
+            extra = f'''<div class="scaler-launch" data-scaler-launch data-early="{early}" data-full="{full}">
+                <p data-launch-stage aria-live="polite">Early access launches 2 December 2026 at midnight IST.</p>
+                <output data-launch-clock aria-live="off" hidden></output>
+                <p class="launch-dates">Full access follows on <time data-full-date datetime="{full}">10 December 2026</time>.</p>
+                </div>'''
         elif slug == 'serlow':
-            action = '<a class="button dark" href="https://serlow-alpha.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Explore Serlow alpha (opens in a new tab)">Explore Serlow alpha ↗</a>'
+            action = (f'<a class="button dark" href="{SCALER_SITE}" target="_blank" rel="noopener noreferrer">Scaler Profile early access ↗</a>'
+                      f'<a class="text-link" href="{SERLOW_BETA}" target="_blank" rel="noopener noreferrer">View Serlow beta v1.0.10 ↗</a>')
         sections.append(f'''<article class="catalogue-product wrap" id="{slug}">
         <div class="catalogue-art art-{slug}">{product_mark(slug, title)}<span class="catalogue-number">0{index} / QIXARC</span></div>
-        <div class="catalogue-copy"><span class="status-chip">{status}</span><h2>{title}</h2><span class="section-label">{category}</span><p>{description}</p>
-        <ul>{''.join(f'<li>{feature}</li>' for feature in features)}</ul>{privacy}<p class="product-progress">{progress}</p>
+        <div class="catalogue-copy"><span class="status-chip"{status_data}>{status}</span><h2>{title}</h2><span class="section-label">{category}</span><p>{description}</p>
+        <ul>{''.join(f'<li>{feature}</li>' for feature in features)}</ul>{privacy}<p class="product-progress">{progress}</p>{extra}
         <div class="product-actions"><a class="text-link" href="https://kabibalansportfolio.vercel.app/{source}" target="_blank" rel="noopener">Read the product case study ↗</a>
         {action}</div></div></article>''')
     return ('Products', 'Explore QIXARC’s Scaler Profile, Zevaris AI, Serlow and Decision Sphere, with current development stages and product capabilities.',
@@ -47,27 +65,34 @@ def product_page(hero, cta):
         cta('Curious about what comes next?', 'Tell us which product you are interested in and how you would use it.', '/contact/', 'Talk to QIXARC'))
 
 def team_profiles():
-    people = [
-        ('Kabibalan', 'Founder', 'https://kabibalansportfolio.vercel.app/'),
-        ('Sri', 'Co-founder', 'https://srisaanthportfolio.vercel.app/'),
-        ('Giri', 'Managing Director', 'https://giri-manigandan-portfolio.vercel.app/'),
-    ]
-    cards = ''.join(f'''<a class="team-profile" href="{url}" target="_blank" rel="noopener" aria-label="{name}, {role} — view portfolio (opens in a new tab)">
-        <span class="team-profile-index" aria-hidden="true">0{i+1} / QIXARC</span>
-        <h3>{name}</h3><p>{role}</p><span class="team-profile-link">View portfolio <span aria-hidden="true">↗</span></span></a>''' for i,(name,role,url) in enumerate(people))
-    return '<div class="team-profiles" id="team"><div class="section-label">THE PEOPLE / OUR LEADERSHIP</div><h2>Meet the team.</h2><div class="team-profile-grid">'+cards+'</div></div>'
+    cards = []
+    for person in defaults['team']:
+        name, role, url, photo = (escape(person[key]) for key in ('name', 'role', 'portfolio', 'photo'))
+        portrait = (f'<img src="{photo}" alt="" loading="lazy" decoding="async">' if photo
+                    else f'<span class="team-initials" aria-hidden="true">{name[0]}</span>')
+        cards.append(f'''<article class="team-profile">
+          <h3>{name}</h3><p>{role}</p>
+          <details class="team-profile-details">
+            <summary>View portfolio <span aria-hidden="true">↗</span></summary>
+            <div class="team-preview">{portrait}<a href="{url}" target="_blank" rel="noopener noreferrer"
+              aria-label="Open {name}’s portfolio in a new tab">Open portfolio ↗</a></div>
+          </details>
+        </article>''')
+    return '<div class="team-profiles" id="team"><div class="section-label">THE PEOPLE / OUR LEADERSHIP</div><h2>Meet the team.</h2><div class="team-profile-grid" data-team-grid>' + ''.join(cards) + '</div></div>'
+
 
 def home_products():
     cards = []
     for slug, title, status, category, description, features, progress, source in products:
-        cards.append(f'<a class="home-product-card" href="/products/#{slug}"><div class="home-product-art art-{slug}">{product_mark(slug,title)}</div><div class="home-product-info"><span class="section-label">{status}</span><h3>{title} <span aria-hidden="true">↗</span></h3><p>{category}</p></div></a>')
+        status_data = ' data-scaler-status' if slug == 'scaler-profile' else ''
+        cards.append(f'<a class="home-product-card" href="/products/#{slug}"><div class="home-product-art art-{slug}">{product_mark(slug,title)}</div><div class="home-product-info"><span class="section-label"{status_data}>{status}</span><h3>{title} <span aria-hidden="true">↗</span></h3><p>{category}</p></div></a>')
     return '<section class="work wrap section" id="products"><div class="section-heading"><div><div class="section-label">02 / OUR PRODUCTS</div><h2>Built to solve.<br>Designed to grow.</h2></div><p>Explore the QIXARC product lineup.</p></div><div class="home-product-grid">'+''.join(cards)+'</div></section>'
 
 chapters = [
     ('2024', 'Curiosity becomes practice.', 'Hi, I’m QBit. Our story starts with Kabibalan S, a B.Tech Information Technology student in Tamil Nadu. His approach is simple: learn by building software around real problems.', 'The first foundation', 'Kabibalan began his B.Tech in Information Technology at Hindusthan Institute of Technology in 2024. His work spans software development, AI, SaaS and automation.'),
     ('2025', 'An idea gets a name.', 'In 2025, Kabibalan founded QIXARC. It gave his work a shared home: a technology startup for software, AI-powered applications and automation.', 'From builder to founder', 'QIXARC brings product development, architecture and business strategy together. The focus is practical software that turns ideas into useful digital experiences.'),
     ('2025', 'Real problems guide the work.', 'Next came AI applications and business automation. The goal wasn’t to add technology for its own sake. It was to reduce repetitive work and make room for the decisions people need to make.', 'Learning through building', 'Hands-on development and GitHub contributions became part of the learning process. Software, interfaces and workflows grew together through practical work.'),
-    ('2026', 'A family of products.', 'Now the story has four product directions: Scaler Profile for conversations, Serlow for teamwork, Decision Sphere for voice- and text-controlled mobile assistance, and Zevaris AI for intelligent assistance. They are at different stages of development.', 'One vision, distinct problems', 'Scaler Profile and Serlow are in development. Decision Sphere is coming soon: a mobile agentic AI being designed around permissions you control. Zevaris AI is coming soon, with its core platform being built.'),
+    ('2026', 'A family of products.', 'Now the story has four product directions: Scaler Profile for conversations, Serlow for teamwork, Decision Sphere for voice- and text-controlled mobile assistance, and Zevaris AI for intelligent assistance. They are at different stages of development.', 'One vision, distinct problems', 'See the Products page for Scaler Profile’s rollout dates. Serlow is in Android beta, with a Play Store launch to follow. Decision Sphere is coming soon: a mobile agentic AI being designed around permissions you control. Zevaris AI is coming soon, with its core platform being built.'),
     ('NEXT', 'The next chapter is open.', 'And where do we go from here? The ambition is to grow QIXARC into a technology company with products that reach people around the world. I’ll be here to help you explore what we build next.', 'An ambition, not a finish line', 'The roadmap looks toward Kabibalan’s expected graduation in 2028 and continued product development. The next chapter is about turning prototypes and early builds into experiences people can use.')
 ]
 

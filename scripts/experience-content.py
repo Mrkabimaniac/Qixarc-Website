@@ -21,7 +21,7 @@ def enhance_home(home):
     home = re.sub(r'<button id="(?:motion-toggle|qbit-motion)".*?</button>', '', home, flags=re.S)
     home = re.sub(r'(<section class="services section" id="services">).*?(</section>)', lambda m: m[1] + '<div class="wrap"><div class="section-heading"><div><div class="section-label">03 / WHAT WE DO</div><h2 class="reveal">From first thought.<br>To final pixel.</h2></div><p>Design and engineering, connected.<br>Find the right starting point for your idea.</p></div>' + service_cards() + '</div>' + m[2], home, flags=re.S)
     old = r'(?:<div class="about-brand">.*?</div>|<a class="about-brand studio-card interactive-card".*?</a>)<div class="about-copy">'
-    studio = '<a class="about-brand studio-card interactive-card" href="/about/"><span class="card-index">QIXARC / MADURAI</span><div class="studio-image"><img src="/assets/studio-v2.webp" srcset="/assets/studio-v2-540.webp 540w, /assets/studio-v2.webp 900w" sizes="(max-width:760px) calc(100vw - 80px), 45vw" alt="Concept illustration of three sculptural figures collaborating at a table" width="900" height="600" loading="lazy" decoding="async"></div><div class="studio-caption"><p>Independent minds.<br>Shared ambition.</p><span class="card-open" aria-hidden="true">↗</span></div><span class="card-action">Inside the studio ↗</span></a><div class="about-copy">'
+    studio = '<a class="about-brand studio-card interactive-card" href="/about/"><span class="card-index">QIXARC / MADURAI</span><div class="studio-image"><img src="/assets/studio-v2.webp" srcset="/assets/studio-v2-540.webp 540w, /assets/studio-v2.webp 900w" sizes="(max-width:760px) calc(100vw - 80px), 45vw" alt="QIXARC team artwork" width="900" height="600" loading="lazy" decoding="async"></div><div class="studio-caption"><p>Independent minds.<br>Shared ambition.</p><span class="card-open" aria-hidden="true">↗</span></div><span class="card-action">Inside the studio ↗</span></a><div class="about-copy">'
     home = re.sub(old, lambda m: studio, home, flags=re.S)
     home = home.replace('class="about-brand studio-card interactive-card"', 'class="about-brand studio-card interactive-card"')
     home = re.sub(r'<div class="about-values">.*?</div></div><a class="text-link"', '<div class="about-values">' + ''.join(f'<a class="value-card interactive-card" href="/about/#{key}"><span class="value-index">{i:02d}</span><div><h3>{name}</h3><p>{text}</p></div><b aria-hidden="true">↗</b></a>' for i,(key,name,text) in enumerate([('human-first','Human first','Useful experiences, built around real people.'),('built-with-purpose','Built with purpose','Every decision connects design to function.'),('ready-for-tomorrow','Ready for tomorrow','Clear foundations for your next chapter.')],1)) + '</div><a class="text-link"', home, flags=re.S)
@@ -53,7 +53,7 @@ def detail_pages(hero, cta):
 
 PAGE_ART = {
     'about': ('studio-v2', 'Abstract sculptural figures collaborating around a table'),
-    'products': ('page-products', 'Conceptual product family with a profile, workspace, AI orb and mobile device'),
+    'products': ('page-products', 'QIXARC product lineup artwork'),
     'story': ('page-story', 'An abstract blue path connecting ascending steps and an open arch'),
     'research': ('page-research', 'Glass prototypes and optical instruments representing research'),
     'blog': ('page-journal', 'An open notebook with blue ribbon and a sculptural cursor'),

@@ -13,7 +13,12 @@
   try { lastActivity = Number(sessionStorage.getItem('qixarc-admin-activity')) || 0; } catch {}
   const say = message => { status.textContent = message; };
   const element = (tag, text, className) => { const e = document.createElement(tag); e.textContent = text; if (className) e.className = className; return e; };
+  const companyEditor = window.QixarcCompanyEditor.createEditor({
+    db, authorize, isActive: () => verified && current === 'company'
+  });
+
   function lock() {
+    companyEditor.reset();
     verified = false; generation++; authGeneration++; clearTimeout(idleTimer);
     dashboard.hidden = true; list.replaceChildren(); editor.hidden = true; form.reset();
     passwordForm.reset();
@@ -88,6 +93,7 @@
   }
   async function load(more = false) {
     if (!verified || current === 'security') return;
+    if (current === 'company') { await companyEditor.load(); return; }
     const ticket = ++generation;
     const tab = current;
     if (!more) { offset = 0; list.replaceChildren(); }
@@ -161,14 +167,17 @@
     current = button.dataset.tab; editor.hidden = true;
     generation++; passwordForm.reset();
     const account = current === 'security';
+    const company = current === 'company';
+    if (!company) companyEditor.reset();
+    document.querySelector('#company-panel').hidden = !company;
     document.querySelector('#security-panel').hidden = !account;
-    document.querySelector('#records-toolbar').hidden = account;
-    list.hidden = account; list.replaceChildren();
+    document.querySelector('#records-toolbar').hidden = account || company;
+    list.hidden = account || company; list.replaceChildren();
     document.querySelector('#load-more').hidden = true;
     say('');
     document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
     document.querySelector('#workspace-title').textContent = button.textContent;
-    document.querySelector('#new-content').hidden = account || current === 'enquiries';
+    document.querySelector('#new-content').hidden = account || company || current === 'enquiries';
     if (!account) load();
   }));
   document.querySelector('#refresh').addEventListener('click', () => load());
