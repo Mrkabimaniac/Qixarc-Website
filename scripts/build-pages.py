@@ -1,5 +1,6 @@
 """Generate QIXARC's static detail pages from the shared landing-page shell."""
 from pathlib import Path
+from office import office_address
 import re
 import runpy
 content = runpy.run_path(str(Path(__file__).with_name("product-story.py")))
@@ -8,6 +9,7 @@ experience = runpy.run_path(str(Path(__file__).with_name("experience-content.py"
 root = Path(__file__).resolve().parents[1] / 'dist'
 home = (root / 'index.html').read_text(encoding='utf-8')
 home = experience['enhance_home'](home)
+home = re.sub(r'<span class="contact-location">MADURAI, TAMIL NADU, INDIA</span>|<address class="contact-location office-address">.*?</address>', lambda match: office_address(), home, count=1)
 home = re.sub(r'<link[^>]+fonts\.(?:googleapis|gstatic)[^>]+>\s*', '', home)
 home = re.sub(r'<link href="https://fonts.googleapis.com[^>]+>\s*', '', home)
 home = re.sub(r'/style.css\?v=[^" ]+', '/style.css?v=pages-1', home)
@@ -53,12 +55,6 @@ def cta(title, text, link='/contact/', label='Start a project'):
     return f'<section class="detail-cta wrap"><div><h2>{title}</h2><p>{text}</p></div><a class="button dark" href="{link}">{label} <span aria-hidden="true">↗</span></a></section>'
 
 pages = {}
-pages['products'] = ('Products', 'Explore Scaler Profile, QIXARC’s conversation operating system, and visit its early-access website.',
-    hero('02', 'PRODUCT LAB', 'One profile.<br>Every conversation.', 'Scaler Profile brings customer context into one place, so the next conversation can start where the last one ended.') +
-    '<section class="product-detail wrap"><div class="product-mark"><img src="/assets/scaler-profile.webp" alt="Scaler Profile metallic emblem" width="720" height="600"><span class="section-label">SCALER PROFILE / BY QIXARC</span></div><div><span class="status-chip">EARLY ACCESS</span><h2>Context that<br>stays connected.</h2><p>Customer memory, AI conversations, workflows and CRM are being brought together across WhatsApp, Instagram and email. The product is designed around a shared profile instead of disconnected inboxes.</p><a class="button dark" href="https://scalerprofile.vercel.app/" target="_blank" rel="noopener">Discover Scaler Profile ↗</a><p class="detail-note">Explore the product’s current features and join its priority list on the official website.</p></div></section>' +
-    '<section class="wrap detail-section">' + cards([('Remember the context.', 'Carry the customer’s history between channels, reducing repeated questions and fragmented notes.'), ('Choose the autonomy.', 'Move from suggested replies to assisted drafts and automated actions, with human handoff when needed.'), ('Test before launch.', 'Explore a workflow in the simulator before introducing it to live customer conversations.')]) + '</section>' +
-    cta('Built here. Growing forward.', 'Follow the first release through the Scaler Profile priority list.', 'https://scalerprofile.vercel.app/join', 'Explore early access'))
-
 pages['services'] = ('Services', 'Plan your website or digital system with QIXARC. Explore deliverables, collaboration and launch preparation.',
     hero('03', 'CAPABILITIES', 'Choose the problem.<br>We’ll shape the build.', 'A useful brief starts with what needs to improve: a clearer message, an easier purchase, or less manual work for your team.') +
     '<section class="wrap detail-section">' + cards([('Experience & identity', 'Map the key user journeys, establish a visual direction and review an interactive prototype before development begins.'), ('Websites & storefronts', 'Define the page structure, product information and conversion paths. Build layouts that remain usable across phones, tablets and desktop screens.'), ('Applications & operations', 'Outline roles, data and integrations. Turn a repeated business task into a focused interface with clear permissions and predictable behaviour.')]) + '</section>' +
@@ -92,7 +88,7 @@ pages['blog/motion-with-purpose'] = ('Motion with purpose', 'A QIXARC design not
 
 pages['contact'] = ('Contact', 'Start a conversation with QIXARC about your next project. Email the studio or prepare a project brief.',
     hero('07', 'OPEN A CONVERSATION', 'Tell us what<br>needs to change.', 'Share the current situation and the outcome you want. We can work out the details together.') +
-    '<section class="wrap contact-detail"><div><h2>Direct to the studio.</h2><a class="contact-email" href="mailto:help@qixarc.com">help@qixarc.com</a><a class="contact-phone" href="tel:+918300715081">+91 83007 15081</a><p>Based in Madurai, Tamil Nadu.</p><div class="contact-checklist"><h3>Helpful to include</h3><p>A link to your existing site, the main challenge, essential features and a rough launch window.</p></div></div><form id="project-form"><div class="form-row"><label>Contact name<input name="name" autocomplete="name" placeholder="Your name" required maxlength="100"></label><label>Reply-to email<input name="email" type="email" autocomplete="email" placeholder="Where can we reach you?" required maxlength="180"></label></div><label class="brief-label">Your project brief<textarea name="message" placeholder="What works today, what doesn’t, and what would you like to build?" required minlength="10" maxlength="5000" rows="6"></textarea></label><button class="button dark" type="submit">Create email draft ↗</button><p class="form-help">Your email app opens with a draft. Nothing is sent until you send it.</p><p id="form-status" role="status"></p><button type="button" id="copy-enquiry" class="text-link" hidden>Copy the prepared brief</button></form></section>')
+    '<section class="wrap contact-detail"><div><h2>Direct to the studio.</h2><a class="contact-email" href="mailto:help@qixarc.com">help@qixarc.com</a><a class="contact-phone" href="tel:+918300715081">+91 83007 15081</a>' + office_address() + '<div class="contact-checklist"><h3>Helpful to include</h3><p>A link to your existing site, the main challenge, essential features and a rough launch window.</p></div></div><form id="project-form"><div class="form-row"><label>Contact name<input name="name" autocomplete="name" placeholder="Your name" required maxlength="100"></label><label>Reply-to email<input name="email" type="email" autocomplete="email" placeholder="Where can we reach you?" required maxlength="180"></label></div><label class="brief-label">Your project brief<textarea name="message" placeholder="What works today, what doesn’t, and what would you like to build?" required minlength="10" maxlength="5000" rows="6"></textarea></label><button class="button dark" type="submit">Create email draft ↗</button><p class="form-help">Your email app opens with a draft. Nothing is sent until you send it.</p><p id="form-status" role="status"></p><button type="button" id="copy-enquiry" class="text-link" hidden>Copy the prepared brief</button></form></section>')
 
 pages['products'] = content['product_page'](hero, cta)
 pages['story'] = content['story_page'](hero, cta)

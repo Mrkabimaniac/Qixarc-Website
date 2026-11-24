@@ -23,8 +23,9 @@
 ## Contact
 - Email: help@qixarc.com
 - Phone: +91 83007 15081
+- Registered office: No. 8, Kalpalam Road, M.M. Complex, Goripalayam, Madurai – 625002, Tamil Nadu, India
 
 ## Product status
-Scaler Profile: development / early access. Zevaris AI: coming soon. Serlow: alpha / in development, https://serlow-alpha.vercel.app/. Decision Sphere: coming soon; an agentic mobile AI in development, with voice or text commands and user-controlled access to mobile data and apps.
+Scaler Profile: see https://www.scalerprofile.com/ and the Products page for access dates. Zevaris AI: coming soon. Serlow: Android beta v1.0.10, https://serlow-app.vercel.app/. Play Store launch pending. Decision Sphere: coming soon; an agentic mobile AI in development, with voice or text commands and user-controlled access to mobile data and apps.
 
 This is an optional navigation summary. The linked HTML pages are the authoritative source.
